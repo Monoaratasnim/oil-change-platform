@@ -2,6 +2,7 @@ import { Cta } from "@/components/site/cta";
 import { Hero } from "@/components/site/hero";
 import { Pricing } from "@/components/site/pricing";
 import { Process } from "@/components/site/process";
+import { QuotationCalculator } from "@/components/site/quotation-calculator";
 import { Services } from "@/components/site/services";
 
 export default function HomePage() {
@@ -11,6 +12,7 @@ export default function HomePage() {
       <Services />
       <Process />
       <Pricing />
+      <QuotationCalculator />
       <Cta />
     </main>
   );
