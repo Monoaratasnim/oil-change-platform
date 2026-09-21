@@ -1,7 +1,28 @@
 "use client";
 
 import { useMemo, useState, type FormEvent } from "react";
-import { AlertTriangle, ArrowRight, Check, Sparkles } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowRight,
+  BatteryCharging,
+  CalendarClock,
+  Car,
+  Check,
+  CheckCircle2,
+  Droplet,
+  Fan,
+  Filter,
+  Lightbulb,
+  Loader2,
+  Refrigerator,
+  Repeat,
+  RotateCw,
+  Sparkles,
+  ThermometerSnowflake,
+  Truck,
+  Van,
+  Wind,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,10 +41,15 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
 });
 
 const equipmentTypes = [
-  { id: "compact-car", label: "Compact delivery car", basePrice: 109 },
-  { id: "delivery-van", label: "Delivery van", basePrice: 129 },
-  { id: "food-truck", label: "Food truck", basePrice: 159 },
-  { id: "box-truck", label: "Refrigerated box truck", basePrice: 189 },
+  { id: "compact-car", label: "Compact delivery car", basePrice: 109, icon: Car },
+  { id: "delivery-van", label: "Delivery van", basePrice: 129, icon: Van },
+  { id: "food-truck", label: "Food truck", basePrice: 159, icon: Truck },
+  {
+    id: "box-truck",
+    label: "Refrigerated box truck",
+    basePrice: 189,
+    icon: Refrigerator,
+  },
 ] as const;
 
 const frequencies = [
@@ -33,6 +59,7 @@ const frequencies = [
     description: "Pay per visit, no commitment.",
     multiplier: 1,
     cadence: "one-time",
+    icon: CalendarClock,
   },
   {
     id: "monthly",
@@ -40,18 +67,29 @@ const frequencies = [
     description: "Recurring dispatch and 20% off every service.",
     multiplier: 0.8,
     cadence: "per month",
+    icon: Repeat,
   },
 ] as const;
 
 const maintenanceOptions = [
-  { id: "air-filter", label: "Air filter replacement", price: 29 },
-  { id: "cabin-filter", label: "Cabin air filter", price: 24 },
-  { id: "brake-fluid", label: "Brake fluid top-up", price: 19 },
-  { id: "coolant", label: "Coolant top-up", price: 22 },
-  { id: "wiper-blades", label: "Wiper blades (pair)", price: 26 },
-  { id: "tire-rotation", label: "Tire pressure & rotation", price: 35 },
-  { id: "battery", label: "Battery test & terminal service", price: 15 },
-  { id: "bulbs", label: "Headlight or taillight bulb", price: 18 },
+  { id: "air-filter", label: "Air filter replacement", price: 29, icon: Filter },
+  { id: "cabin-filter", label: "Cabin air filter", price: 24, icon: Wind },
+  { id: "brake-fluid", label: "Brake fluid top-up", price: 19, icon: Droplet },
+  {
+    id: "coolant",
+    label: "Coolant top-up",
+    price: 22,
+    icon: ThermometerSnowflake,
+  },
+  { id: "wiper-blades", label: "Wiper blades (pair)", price: 26, icon: Fan },
+  { id: "tire-rotation", label: "Tire pressure & rotation", price: 35, icon: RotateCw },
+  {
+    id: "battery",
+    label: "Battery test & terminal service",
+    price: 15,
+    icon: BatteryCharging,
+  },
+  { id: "bulbs", label: "Headlight or taillight bulb", price: 18, icon: Lightbulb },
 ] as const;
 
 const equipmentById = new Map<string, (typeof equipmentTypes)[number]>(
@@ -76,6 +114,11 @@ function QuotationCalculator() {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [attempted, setAttempted] = useState(false);
   const [quoteReady, setQuoteReady] = useState(false);
+  const [submitState, setSubmitState] = useState<
+    "idle" | "submitting" | "success" | "error"
+  >("idle");
+  const [submitError, setSubmitError] = useState("");
+  const [quotationId, setQuotationId] = useState<number | null>(null);
 
   const equipment = equipmentById.get(equipmentId) ?? null;
   const frequency = frequencyById.get(frequencyId) ?? frequencies[0];
@@ -99,14 +142,22 @@ function QuotationCalculator() {
   const estimatedPrice = equipment ? discountedBase + optionTotal : 0;
   const savings = equipment ? equipment.basePrice - discountedBase : 0;
 
+  function resetSubmission() {
+    setSubmitState("idle");
+    setSubmitError("");
+    setQuotationId(null);
+  }
+
   function updateEquipment(id: string) {
     setEquipmentId(id);
     setQuoteReady(false);
+    resetSubmission();
   }
 
   function updateFrequency(id: "one-time" | "monthly") {
     setFrequencyId(id);
     setQuoteReady(false);
+    resetSubmission();
   }
 
   function toggleOption(id: string) {
@@ -114,6 +165,7 @@ function QuotationCalculator() {
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
     setQuoteReady(false);
+    resetSubmission();
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -121,6 +173,43 @@ function QuotationCalculator() {
     setAttempted(true);
     if (!hasErrors) {
       setQuoteReady(true);
+      resetSubmission();
+    }
+  }
+
+  async function confirmQuote() {
+    if (!equipment) {
+      return;
+    }
+    setSubmitState("submitting");
+    setSubmitError("");
+    try {
+      const response = await fetch("/api/quotations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          equipmentType: equipment.label,
+          serviceTier: frequency.id,
+          selectedOptions,
+          estimatedPrice,
+        }),
+      });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) {
+        setSubmitError(
+          payload?.error ??
+            "We could not save your quotation. Please try again.",
+        );
+        setSubmitState("error");
+        return;
+      }
+      setQuotationId(typeof payload?.id === "number" ? payload.id : null);
+      setSubmitState("success");
+    } catch {
+      setSubmitError(
+        "Network error — your quotation was not saved. Please try again.",
+      );
+      setSubmitState("error");
     }
   }
 
@@ -131,6 +220,13 @@ function QuotationCalculator() {
       : optionsMissing
         ? "No maintenance services selected yet — add at least one to see your estimate."
         : null;
+
+  const cardIdle =
+    "border-neutral-800 bg-neutral-900/60 hover:border-neutral-600 hover:bg-neutral-900";
+  const cardActive =
+    "border-amber-400/80 bg-amber-500/[0.04] shadow-[0_0_20px_rgba(245,158,11,0.12)]";
+  const focusVisible =
+    "peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background";
 
   return (
     <section
@@ -150,7 +246,7 @@ function QuotationCalculator() {
           noValidate
           className="grid items-start gap-6 lg:grid-cols-[1.05fr_0.95fr]"
         >
-          <Card className="gap-8">
+          <Card className="gap-8 border-neutral-800/80 bg-neutral-950/60">
             <CardHeader className="gap-2 sm:px-7 sm:pt-7">
               <CardTitle className="text-h3">Service details</CardTitle>
             </CardHeader>
@@ -166,42 +262,59 @@ function QuotationCalculator() {
                 >
                   {equipmentTypes.map((item) => {
                     const selected = equipmentId === item.id;
+                    const Icon = item.icon;
                     return (
-                      <label key={item.id} className={cn("group relative")}>
+                      <label key={item.id} className="group relative">
                         <input
                           type="radio"
                           name="equipment"
                           value={item.id}
                           checked={selected}
                           onChange={() => updateEquipment(item.id)}
+                          aria-describedby={
+                            attempted && equipmentMissing
+                              ? "equipment-error"
+                              : undefined
+                          }
                           className="sr-only peer"
                         />
                         <span
                           className={cn(
-                            "flex cursor-pointer flex-col gap-1 rounded-xl border bg-background/40 p-4 transition-all",
-                            "peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background",
-                            selected
-                              ? "border-primary bg-accent/60 shadow-glow-sm"
-                              : "border-border hover:border-primary/60 hover:bg-accent",
+                            "flex h-full cursor-pointer flex-col gap-3 rounded-xl border p-4 transition-all duration-200",
+                            focusVisible,
+                            selected ? cardActive : cardIdle,
                           )}
                         >
-                          <span className="flex items-center justify-between gap-2">
-                            <span className="text-sm font-semibold text-foreground">
-                              {item.label}
+                          <span className="flex items-center justify-between gap-3">
+                            <span className="flex items-center gap-3">
+                              <span
+                                aria-hidden
+                                className={cn(
+                                  "flex size-9 shrink-0 items-center justify-center rounded-lg border transition-colors",
+                                  selected
+                                    ? "border-amber-400/30 bg-amber-400/10 text-amber-400"
+                                    : "border-neutral-700/80 bg-neutral-950 text-neutral-400",
+                                )}
+                              >
+                                <Icon className="size-4" />
+                              </span>
+                              <span className="text-sm font-semibold text-foreground">
+                                {item.label}
+                              </span>
                             </span>
                             <span
                               aria-hidden
                               className={cn(
-                                "flex size-5 shrink-0 items-center justify-center rounded-full border",
+                                "flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors",
                                 selected
-                                  ? "border-primary bg-primary text-primary-foreground"
-                                  : "border-border text-transparent",
+                                  ? "border-amber-400 bg-amber-400 text-neutral-950"
+                                  : "border-neutral-700 text-transparent",
                               )}
                             >
                               <Check className="size-3" />
                             </span>
                           </span>
-                          <span className="font-display text-sm font-bold text-brand-400">
+                          <span className="pl-12 font-display text-sm font-bold text-amber-400">
                             {formatCurrency(item.basePrice)}
                           </span>
                         </span>
@@ -232,6 +345,7 @@ function QuotationCalculator() {
                 >
                   {frequencies.map((item) => {
                     const selected = frequencyId === item.id;
+                    const Icon = item.icon;
                     return (
                       <label key={item.id} className="group relative">
                         <input
@@ -244,34 +358,48 @@ function QuotationCalculator() {
                         />
                         <span
                           className={cn(
-                            "flex cursor-pointer flex-col gap-1.5 rounded-xl border bg-background/40 p-4 transition-all",
-                            "peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background",
-                            selected
-                              ? "border-primary bg-accent/60 shadow-glow-sm"
-                              : "border-border hover:border-primary/60 hover:bg-accent",
+                            "flex h-full cursor-pointer flex-col gap-2 rounded-xl border p-4 transition-all duration-200",
+                            focusVisible,
+                            selected ? cardActive : cardIdle,
                           )}
                         >
-                          <span className="flex items-center justify-between gap-2">
-                            <span className="text-sm font-semibold text-foreground">
-                              {item.label}
+                          <span className="flex items-center justify-between gap-3">
+                            <span className="flex items-center gap-3">
+                              <span
+                                aria-hidden
+                                className={cn(
+                                  "flex size-9 shrink-0 items-center justify-center rounded-lg border transition-colors",
+                                  selected
+                                    ? "border-amber-400/30 bg-amber-400/10 text-amber-400"
+                                    : "border-neutral-700/80 bg-neutral-950 text-neutral-400",
+                                )}
+                              >
+                                <Icon className="size-4" />
+                              </span>
+                              <span className="text-sm font-semibold text-foreground">
+                                {item.label}
+                              </span>
                             </span>
                             <span
                               aria-hidden
                               className={cn(
-                                "flex size-5 shrink-0 items-center justify-center rounded-full border",
+                                "flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors",
                                 selected
-                                  ? "border-primary bg-primary text-primary-foreground"
-                                  : "border-border text-transparent",
+                                  ? "border-amber-400 bg-amber-400 text-neutral-950"
+                                  : "border-neutral-700 text-transparent",
                               )}
                             >
                               <Check className="size-3" />
                             </span>
                           </span>
-                          <span className="text-xs leading-relaxed text-muted-foreground">
+                          <span className="pl-12 text-xs leading-relaxed text-muted-foreground">
                             {item.description}
                           </span>
                           {item.id === "monthly" ? (
-                            <Badge variant="brand" className="mt-1 w-fit">
+                            <Badge
+                              variant="amber"
+                              className="mt-1 ml-12 w-fit"
+                            >
                               Save 20%
                             </Badge>
                           ) : null}
@@ -293,6 +421,7 @@ function QuotationCalculator() {
                 <ul className="grid gap-2.5 sm:grid-cols-2">
                   {maintenanceOptions.map((option) => {
                     const selected = selectedOptions.includes(option.id);
+                    const Icon = option.icon;
                     return (
                       <li key={option.id}>
                         <label className="group relative">
@@ -300,34 +429,54 @@ function QuotationCalculator() {
                             type="checkbox"
                             checked={selected}
                             onChange={() => toggleOption(option.id)}
+                            aria-invalid={
+                              (attempted && optionsMissing) || undefined
+                            }
+                            aria-describedby={
+                              attempted && optionsMissing
+                                ? "options-error"
+                                : undefined
+                            }
                             className="sr-only peer"
                           />
                           <span
                             className={cn(
-                              "flex cursor-pointer items-center justify-between gap-3 rounded-lg border px-3.5 py-3 transition-all",
-                              "peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background",
+                              "flex cursor-pointer items-center justify-between gap-3 rounded-lg border px-3.5 py-3 transition-all duration-200",
+                              focusVisible,
                               selected
-                                ? "border-primary bg-accent/60"
-                                : "border-border hover:border-primary/60 hover:bg-accent",
+                                ? "border-amber-400/70 bg-amber-500/[0.04] shadow-[0_0_16px_rgba(245,158,11,0.10)]"
+                                : cardIdle,
                             )}
                           >
                             <span className="flex items-center gap-2.5">
                               <span
                                 aria-hidden
                                 className={cn(
-                                  "flex size-5 shrink-0 items-center justify-center rounded-md border",
+                                  "flex size-5 shrink-0 items-center justify-center rounded-md border transition-colors",
                                   selected
-                                    ? "border-primary bg-primary text-primary-foreground"
-                                    : "border-border bg-background text-transparent",
+                                    ? "border-amber-400 bg-amber-400 text-neutral-950"
+                                    : "border-neutral-700 bg-neutral-950 text-transparent",
                                 )}
                               >
                                 <Check className="size-3" />
                               </span>
+                              <Icon
+                                aria-hidden
+                                className={cn(
+                                  "size-4 shrink-0 transition-colors",
+                                  selected ? "text-amber-400" : "text-neutral-500",
+                                )}
+                              />
                               <span className="text-sm font-medium text-foreground">
                                 {option.label}
                               </span>
                             </span>
-                            <span className="text-sm font-semibold text-muted-foreground">
+                            <span
+                              className={cn(
+                                "text-sm font-semibold transition-colors",
+                                selected ? "text-amber-400" : "text-muted-foreground",
+                              )}
+                            >
                               {formatCurrency(option.price)}
                             </span>
                           </span>
@@ -361,10 +510,10 @@ function QuotationCalculator() {
             </CardContent>
           </Card>
 
-          <Card className="sticky top-24 gap-6">
+          <Card className="sticky top-28 gap-6 border-neutral-800/80 bg-neutral-950/60">
             <CardHeader className="gap-2 sm:px-7 sm:pt-7">
               <CardTitle className="flex items-center gap-2 text-h3">
-                <Sparkles className="size-5 text-brand-400" aria-hidden />
+                <Sparkles className="size-5 text-amber-400" aria-hidden />
                 Your estimate
               </CardTitle>
             </CardHeader>
@@ -375,34 +524,34 @@ function QuotationCalculator() {
                 className="flex flex-col gap-6"
               >
                 {equipment === null ? (
-                  <p className="rounded-xl border border-dashed border-border bg-background/40 p-5 text-sm leading-relaxed text-muted-foreground">
+                  <p className="rounded-xl border border-dashed border-white/10 bg-neutral-950/40 p-5 text-sm leading-relaxed text-muted-foreground">
                     {summaryMessage}
                   </p>
                 ) : (
-                  <dl className="flex flex-col gap-3 text-sm">
-                    <div className="flex items-center justify-between gap-3">
+                  <dl className="flex flex-col divide-y divide-white/5 text-sm">
+                    <div className="flex items-center justify-between gap-3 py-3 first:pt-0">
                       <dt className="text-muted-foreground">Equipment</dt>
-                      <dd className="font-medium text-foreground">
+                      <dd className="font-semibold text-foreground">
                         {equipment.label}
                       </dd>
                     </div>
-                    <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center justify-between gap-3 py-3">
                       <dt className="text-muted-foreground">Base service</dt>
-                      <dd className="font-medium text-foreground">
+                      <dd className="font-semibold text-foreground">
                         {formatCurrency(equipment.basePrice)}
                       </dd>
                     </div>
                     {frequency.multiplier < 1 ? (
-                      <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center justify-between gap-3 py-3">
                         <dt className="text-muted-foreground">
                           {frequency.label} discount
                         </dt>
-                        <dd className="font-medium text-brand-400">
+                        <dd className="font-medium text-amber-400">
                           {formatCurrency(-savings)}
                         </dd>
                       </div>
                     ) : null}
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start justify-between gap-3 py-3 last:pb-0">
                       <dt className="text-muted-foreground">
                         Maintenance{" "}
                         <span className="block text-xs">
@@ -426,13 +575,21 @@ function QuotationCalculator() {
                   </dl>
                 )}
 
-                <div className="flex flex-col gap-4 border-t border-border pt-5">
+                <div className="flex flex-col gap-4 border-t border-white/5 pt-5">
                   <div className="flex items-end justify-between gap-3">
                     <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
                       Estimated total
                     </p>
                     {quoteReady ? (
-                      <Badge>Ready to confirm</Badge>
+                      <Badge
+                        variant={submitState === "success" ? "amber" : "default"}
+                      >
+                        {submitState === "success"
+                          ? "Confirmed"
+                          : submitState === "submitting"
+                            ? "Saving…"
+                            : "Ready to confirm"}
+                      </Badge>
                     ) : (
                       <p className="text-xs text-muted-foreground">
                         {frequency.cadence}
@@ -455,24 +612,73 @@ function QuotationCalculator() {
               </div>
 
               {quoteReady ? (
-                <div className="flex flex-col gap-3 border-t border-border pt-4">
-                  <a
-                    href="#contact"
-                    className={cn(
-                      "inline-flex h-12 w-full items-center justify-center rounded-lg bg-primary px-6 text-base font-medium text-primary-foreground shadow-glow transition-colors hover:bg-primary/90",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                    )}
-                  >
-                    Confirm this quote
-                    <ArrowRight className="size-4" aria-hidden />
-                  </a>
+                <div className="flex flex-col gap-3 border-t border-white/5 pt-4">
+                  {submitState === "success" ? (
+                    <div
+                      role="status"
+                      aria-live="polite"
+                      className="flex flex-col items-center gap-3 rounded-xl border border-amber-400/30 bg-amber-500/10 px-6 py-8 text-center"
+                    >
+                      <span className="flex size-11 items-center justify-center rounded-full bg-amber-400/20 text-amber-400">
+                        <CheckCircle2 className="size-5" aria-hidden />
+                      </span>
+                      <div className="flex flex-col gap-1">
+                        <p className="font-display text-h4 font-bold text-foreground">
+                          Quotation confirmed
+                        </p>
+                        <p className="text-sm leading-relaxed text-muted-foreground">
+                          {quotationId
+                            ? `Reference #${quotationId}. A technician will call you within one business hour.`
+                            : "A technician will call you within one business hour."}
+                        </p>
+                      </div>
+                    </div>
+                  ) : submitState === "error" ? (
+                    <p
+                      role="alert"
+                      className="flex items-center justify-between gap-3 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2.5 text-sm text-destructive"
+                    >
+                      <span className="flex items-center gap-2">
+                        <AlertTriangle className="size-4 shrink-0" aria-hidden />
+                        {submitError}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={confirmQuote}
+                        className="shrink-0 rounded-md border border-destructive/40 px-2.5 py-1 text-xs font-semibold transition-colors hover:bg-destructive/15 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+                      >
+                        Retry
+                      </button>
+                    </p>
+                  ) : (
+                    <Button
+                      type="button"
+                      size="lg"
+                      variant="glow"
+                      onClick={confirmQuote}
+                      disabled={submitState === "submitting"}
+                      className="w-full justify-center text-base"
+                    >
+                      {submitState === "submitting" ? (
+                        <>
+                          <Loader2 className="size-4 animate-spin" aria-hidden />
+                          Saving quotation…
+                        </>
+                      ) : (
+                        <>
+                          Confirm this quote
+                          <ArrowRight aria-hidden />
+                        </>
+                      )}
+                    </Button>
+                  )}
                   <p className="text-center text-xs text-muted-foreground">
                     A technician confirms your quote by phone within one
                     business hour.
                   </p>
                 </div>
               ) : attempted && hasErrors ? (
-                <p className="flex items-start gap-2 border-t border-border pt-4 text-sm text-destructive">
+                <p className="flex items-start gap-2 border-t border-white/5 pt-4 text-sm text-destructive">
                   <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
                   Complete the highlighted fields to generate your quote.
                 </p>

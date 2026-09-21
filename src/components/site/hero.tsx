@@ -106,17 +106,17 @@ function Hero() {
           </dl>
         </div>
 
-        <Card className="relative w-full max-w-md animate-fade-in-up lg:justify-self-end">
+        <Card className="relative w-full max-w-md border-neutral-800/80 bg-neutral-950/60 animate-fade-in-up lg:justify-self-end">
           <CardContent className="flex flex-col gap-5 p-6 sm:p-8">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <span
                   aria-hidden
-                  className="relative flex size-2.5 rounded-full bg-brand-400"
+                  className="relative flex size-2.5 rounded-full bg-amber-400"
                 >
                   <span
                     aria-hidden
-                    className="absolute inset-0 animate-ping rounded-full bg-brand-400/70"
+                    className="absolute inset-0 animate-ping rounded-full bg-amber-400/70"
                   />
                 </span>
                 <h2 className="font-display text-h4 font-bold text-foreground">
@@ -129,7 +129,7 @@ function Hero() {
             <ul className="grid gap-4">
               <li className="flex items-start gap-3">
                 <CalendarCheck2
-                  className="mt-0.5 size-5 shrink-0 text-brand-400"
+                  className="mt-0.5 size-5 shrink-0 text-amber-400"
                   aria-hidden
                 />
                 <div>
@@ -143,7 +143,7 @@ function Hero() {
               </li>
               <li className="flex items-start gap-3">
                 <Truck
-                  className="mt-0.5 size-5 shrink-0 text-brand-400"
+                  className="mt-0.5 size-5 shrink-0 text-amber-400"
                   aria-hidden
                 />
                 <div>
@@ -157,7 +157,7 @@ function Hero() {
               </li>
               <li className="flex items-start gap-3">
                 <Droplet
-                  className="mt-0.5 size-5 shrink-0 text-brand-400"
+                  className="mt-0.5 size-5 shrink-0 text-amber-400"
                   aria-hidden
                 />
                 <div>
@@ -171,7 +171,7 @@ function Hero() {
               </li>
               <li className="flex items-start gap-3">
                 <Gauge
-                  className="mt-0.5 size-5 shrink-0 text-brand-400"
+                  className="mt-0.5 size-5 shrink-0 text-amber-400"
                   aria-hidden
                 />
                 <div>

@@ -1,11 +1,12 @@
+import Link from "next/link";
 import { Droplet } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function Logo({ className }: { className?: string }) {
   return (
-    <a
-      href="#top"
-      aria-label="Emberline - back to top"
+    <Link
+      href="/"
+      aria-label="Emberline - home"
       className={cn(
         "group inline-flex items-center gap-2.5 rounded-md focus-visible:outline-none",
         className,
@@ -22,7 +23,7 @@ function Logo({ className }: { className?: string }) {
           On-site oil
         </span>
       </span>
-    </a>
+    </Link>
   );
 }
 

@@ -28,7 +28,7 @@ function Process() {
     <section
       id="process"
       aria-label="How it works"
-      className="scroll-mt-24 border-y border-border/60 bg-oil-900/40 py-20 sm:py-28"
+      className="scroll-mt-24 border-y border-white/5 bg-oil-900/40 py-20 sm:py-28"
     >
       <Container className="flex flex-col gap-14">
         <SectionHeading
@@ -43,15 +43,15 @@ function Process() {
             return (
               <li
                 key={step.title}
-                className="relative flex flex-col gap-4 rounded-xl border border-border bg-card p-6 shadow-sm"
+                className="relative flex flex-col gap-4 rounded-xl border border-neutral-800 bg-neutral-950/60 p-6 shadow-sm"
               >
                 <div className="flex items-center justify-between">
-                  <span className="flex size-11 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+                  <span className="flex size-11 items-center justify-center rounded-lg border border-neutral-800 bg-neutral-950 text-amber-400">
                     <Icon className="size-5" aria-hidden />
                   </span>
                   <span
                     aria-hidden
-                    className="font-display text-4xl font-extrabold text-border"
+                    className="font-display text-4xl font-extrabold text-neutral-700"
                   >
                     {String(index + 1).padStart(2, "0")}
                   </span>

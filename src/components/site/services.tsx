@@ -65,8 +65,8 @@ function FeatureList({ items }: { items: string[] }) {
     <ul className="grid gap-2.5">
       {items.map((item) => (
         <li key={item} className="flex items-start gap-2.5 text-sm text-foreground">
-          <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand-500/15">
-            <Check className="size-3 text-brand-400" aria-hidden />
+          <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-amber-400/10">
+            <Check className="size-3 text-amber-400" aria-hidden />
           </span>
           {item}
         </li>
@@ -96,13 +96,14 @@ function Services() {
               <Card
                 key={offering.title}
                 className={cn(
-                  "gap-6",
-                  offering.featured && "border-primary/40 lg:-mt-4 lg:mb-4 lg:shadow-glow-sm",
+                  "gap-6 border-neutral-800/80 bg-neutral-950/60",
+                  offering.featured &&
+                    "border-amber-400/30 lg:-mt-4 lg:mb-4 lg:shadow-[0_0_20px_rgba(245,158,11,0.10)]",
                 )}
               >
                 <CardHeader className="gap-4 sm:px-7 sm:pt-7">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="flex size-11 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-glow-sm">
+                    <span className="flex size-11 items-center justify-center rounded-lg border border-neutral-800 bg-neutral-950 text-amber-400">
                       <Icon className="size-5" aria-hidden />
                     </span>
                     <Badge variant={offering.featured ? "brand" : "outline"}>

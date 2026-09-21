@@ -1,4 +1,5 @@
 import { Cta } from "@/components/site/cta";
+import { ErrorBoundary } from "@/components/site/error-boundary";
 import { Hero } from "@/components/site/hero";
 import { Pricing } from "@/components/site/pricing";
 import { Process } from "@/components/site/process";
@@ -12,7 +13,9 @@ export default function HomePage() {
       <Services />
       <Process />
       <Pricing />
-      <QuotationCalculator />
+      <ErrorBoundary>
+        <QuotationCalculator />
+      </ErrorBoundary>
       <Cta />
     </main>
   );

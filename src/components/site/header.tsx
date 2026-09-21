@@ -1,12 +1,13 @@
+import Link from "next/link";
 import { Menu } from "lucide-react";
 import { Logo } from "@/components/site/logo";
 
 const navLinks = [
-  { href: "#services", label: "Services" },
-  { href: "#process", label: "How it works" },
-  { href: "#pricing", label: "Pricing" },
-  { href: "#quote", label: "Quote" },
-  { href: "#contact", label: "Contact" },
+  { href: "/#services", label: "Services" },
+  { href: "/#process", label: "How it works" },
+  { href: "/#pricing", label: "Pricing" },
+  { href: "/#quote", label: "Quote" },
+  { href: "/#contact", label: "Contact" },
 ];
 
 function Header() {
@@ -20,23 +21,23 @@ function Header() {
           className="hidden items-center gap-1 md:flex"
         >
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <a
-            href="#contact"
+          <Link
+            href="/#contact"
             className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow-xs transition-colors hover:bg-primary/90 focus-visible:outline-none"
           >
             Book now
-          </a>
+          </Link>
         </div>
 
         <details className="group relative md:hidden">
@@ -51,20 +52,20 @@ function Header() {
             className="absolute right-0 top-12 flex w-56 flex-col gap-1 rounded-xl border border-border bg-popover p-2 shadow-lg"
           >
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 className="rounded-md px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
-            <a
-              href="#contact"
+            <Link
+              href="/#contact"
               className="mt-1 inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none"
             >
               Book now
-            </a>
+            </Link>
           </nav>
         </details>
       </div>

@@ -78,9 +78,9 @@ function Pricing() {
             <Card
               key={plan.name}
               className={cn(
-                "gap-6",
+                "gap-6 border-neutral-800/80 bg-neutral-950/60",
                 plan.featured &&
-                  "border-primary/50 shadow-glow lg:-mt-4 lg:mb-4",
+                  "border-amber-400/40 shadow-[0_0_24px_rgba(245,158,11,0.10)] lg:-mt-4 lg:mb-4",
               )}
             >
               <CardHeader className="gap-3 sm:px-7 sm:pt-7">
@@ -107,8 +107,8 @@ function Pricing() {
                       key={feature}
                       className="flex items-start gap-2.5 text-sm text-foreground"
                     >
-                      <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand-500/15">
-                        <Check className="size-3 text-brand-400" aria-hidden />
+                      <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-amber-400/10">
+                        <Check className="size-3 text-amber-400" aria-hidden />
                       </span>
                       {feature}
                     </li>
