@@ -39,21 +39,21 @@ function Hero() {
       />
       <div
         aria-hidden
-        className="absolute top-24 left-1/2 -z-10 h-[34rem] w-[34rem] -translate-x-1/2 bg-glow-ember"
+        className="absolute top-24 left-1/2 -z-10 hidden h-[34rem] w-[34rem] -translate-x-1/2 bg-glow-ember sm:block"
       />
       <div
         aria-hidden
         className="absolute -right-40 top-40 -z-10 hidden h-[28rem] w-[28rem] bg-glow-cool lg:block"
       />
 
-      <Container className="flex flex-col gap-16 pt-32 pb-20 sm:pt-40 lg:min-h-dvh lg:flex-row lg:items-center lg:gap-12 lg:pt-36 lg:pb-28">
+      <Container className="flex flex-col gap-6 pt-28 pb-20 sm:gap-16 sm:pt-40 lg:min-h-dvh lg:flex-row lg:items-center lg:gap-12 lg:pt-36 lg:pb-28">
         <div className="flex max-w-2xl flex-col items-start gap-6 animate-fade-in-up">
           <Badge variant="brand" className="gap-1.5">
             <ShieldCheck aria-hidden />
             Commercial on-site service
           </Badge>
 
-          <h1 className="font-display text-display text-foreground">
+          <h1 className="font-display text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:tracking-[-0.03em] md:text-6xl xl:text-display">
             Engine care for kitchens that never close.
           </h1>
 
