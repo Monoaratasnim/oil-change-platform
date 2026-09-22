@@ -21,7 +21,7 @@ function Footer() {
     <footer className="border-t border-border/60 bg-oil-900/40">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.3fr]">
-          <div className="flex max-w-sm flex-col items-start gap-4">
+          <div className="flex max-w-sm min-w-0 flex-col items-start gap-4">
             <Logo />
             <p className="text-sm leading-relaxed text-muted-foreground">
               Emberline is the on-site oil change service built for commercial
@@ -30,7 +30,7 @@ function Footer() {
             </p>
           </div>
 
-          <nav aria-label="Services" className="flex flex-col gap-3">
+          <nav aria-label="Services" className="flex min-w-0 flex-col gap-3">
             <h2 className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
               Services
             </h2>
@@ -48,7 +48,7 @@ function Footer() {
             </ul>
           </nav>
 
-          <nav aria-label="Company" className="flex flex-col gap-3">
+          <nav aria-label="Company" className="flex min-w-0 flex-col gap-3">
             <h2 className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
               Company
             </h2>
@@ -66,38 +66,38 @@ function Footer() {
             </ul>
           </nav>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex min-w-0 flex-col gap-3">
             <h2 className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
               Contact
             </h2>
-            <ul className="grid gap-3 text-sm text-foreground">
-              <li className="flex items-start gap-2.5">
+            <ul className="grid min-w-0 gap-3 text-sm text-foreground">
+              <li className="flex min-w-0 items-start gap-2.5">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-brand-400" aria-hidden />
-                <span>
+                <span className="break-words">
                   4820 SE Powell Blvd, Portland, OR 97206
                 </span>
               </li>
-              <li>
+              <li className="min-w-0">
                 <a
                   href="tel:+15550129876"
-                  className="flex items-start gap-2.5 transition-colors hover:text-brand-400 focus-visible:outline-none"
+                  className="flex min-w-0 items-start gap-2.5 break-words transition-colors hover:text-brand-400 focus-visible:outline-none"
                 >
                   <Phone className="mt-0.5 size-4 shrink-0 text-brand-400" aria-hidden />
                   (555) 012-9876
                 </a>
               </li>
-              <li>
+              <li className="min-w-0">
                 <a
                   href="mailto:ops@emberline.example"
-                  className="flex items-start gap-2.5 transition-colors hover:text-brand-400 focus-visible:outline-none"
+                  className="flex min-w-0 items-start gap-2.5 break-words transition-colors hover:text-brand-400 focus-visible:outline-none"
                 >
                   <Mail className="mt-0.5 size-4 shrink-0 text-brand-400" aria-hidden />
                   ops@emberline.example
                 </a>
               </li>
-              <li className="flex items-start gap-2.5">
+              <li className="flex min-w-0 items-start gap-2.5">
                 <Clock className="mt-0.5 size-4 shrink-0 text-brand-400" aria-hidden />
-                <span>Mon–Sat, 6:00 AM – 10:00 PM</span>
+                <span className="break-words">Mon–Sat, 6:00 AM – 10:00 PM</span>
               </li>
             </ul>
           </div>

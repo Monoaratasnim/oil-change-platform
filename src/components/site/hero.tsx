@@ -85,7 +85,8 @@ function Hero() {
                 buttonVariants({
                   variant: "outlined",
                   size: "lg",
-                  className: "px-4 text-sm sm:px-6 sm:text-base",
+                  className:
+                    "h-auto gap-1.5 px-4 py-2.5 text-sm sm:h-12 sm:gap-2 sm:px-6 sm:text-base",
                 }),
               )}
             >
@@ -95,7 +96,7 @@ function Hero() {
 
           <ul
             aria-label="Types of kitchens we serve"
-            className="flex flex-wrap items-center justify-center gap-2 text-center text-sm text-muted-foreground sm:justify-start sm:text-left"
+            className="flex flex-wrap items-center gap-2 text-left text-sm text-muted-foreground"
           >
             <li className="font-medium text-foreground">Trusted by 140+ local kitchens</li>
             {["Restaurants", "Cafés", "Food trucks", "Commissaries"].map((kind) => (
@@ -107,7 +108,7 @@ function Hero() {
 
           <dl className="mt-4 grid w-full grid-cols-2 gap-4 border-t border-border pt-6 sm:grid-cols-4">
             {stats.map((stat) => (
-              <div key={stat.label} className="flex flex-col items-center gap-1 text-center sm:items-start sm:text-left">
+              <div key={stat.label} className="flex flex-col items-start gap-1 text-left">
                 <dt className="order-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                   {stat.label}
                 </dt>
