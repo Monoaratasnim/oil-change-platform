@@ -39,7 +39,7 @@ function Hero() {
       />
       <div
         aria-hidden
-        className="absolute -top-40 left-1/2 -z-10 h-[34rem] w-[34rem] -translate-x-1/2 bg-glow-ember"
+        className="absolute top-24 left-1/2 -z-10 h-[34rem] w-[34rem] -translate-x-1/2 bg-glow-ember"
       />
       <div
         aria-hidden
