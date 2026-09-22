@@ -53,28 +53,40 @@ function Hero() {
             Commercial on-site service
           </Badge>
 
-          <h1 className="font-display text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:tracking-[-0.03em] md:text-6xl xl:text-display">
+          <h1 className="font-display text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl md:tracking-[-0.03em] md:text-6xl xl:text-display">
             Engine care for kitchens that never close.
           </h1>
 
-          <p className="text-lead text-muted-foreground">
+          <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
             Emberline dispatches certified technicians to your storefront. Oil
             and filter changes completed in under an hour, using 100%
             full-synthetic oil — so your fleet stays moving and your crew stays
             on the line.
           </p>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <a
               href="#pricing"
-              className={cn(buttonVariants({ variant: "glow", size: "lg" }))}
+              className={cn(
+                buttonVariants({
+                  variant: "glow",
+                  size: "lg",
+                  className: "px-4 text-sm sm:px-6 sm:text-base",
+                }),
+              )}
             >
               View service plans
               <ArrowRight aria-hidden />
             </a>
             <a
               href="#process"
-              className={cn(buttonVariants({ variant: "outlined", size: "lg" }))}
+              className={cn(
+                buttonVariants({
+                  variant: "outlined",
+                  size: "lg",
+                  className: "px-4 text-sm sm:px-6 sm:text-base",
+                }),
+              )}
             >
               How it works
             </a>
